@@ -38,11 +38,9 @@ var openTradesStr = "_opentrades"				//name for the key/value that will store al
 
 type Marble struct{
 	Name string `json:"name"`					//the fieldtags are needed to keep case from bouncing around
-	Category string `json:"category"`
+	Color string `json:"color"`
 	Size int `json:"size"`
-	Location string `json:"location"`
-	Binder string `json:"binder"`
-
+	User string `json:"user"`
 }
 
 // ============================================================================================================================
@@ -61,7 +59,7 @@ func main() {
 func (t *SimpleChaincode) init(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var Aval int
 	var err error
-
+    fmt.Println("Initializing")
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
@@ -215,7 +213,7 @@ func (t *SimpleChaincode) init_marble(stub *shim.ChaincodeStub, args []string) (
 
 	//   0       1       2     3
 	// "asdf", "blue", "35", "bob"
-	if len(args) != 5 {
+	if len(args) != 4 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 4")
 	}
 
@@ -232,20 +230,16 @@ func (t *SimpleChaincode) init_marble(stub *shim.ChaincodeStub, args []string) (
 	if len(args[3]) <= 0 {
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
-	if len(args[4]) <= 0 {
-		return nil, errors.New("5th argument must be a non-empty string")
-	}
 	
 	size, err := strconv.Atoi(args[2])
 	if err != nil {
 		return nil, errors.New("3rd argument must be a numeric string")
 	}
 	
-	category := strings.ToLower(args[1])
-	location := strings.ToLower(args[3])
-	binder := strings.ToLower(args[4])
+	color := strings.ToLower(args[1])
+	user := strings.ToLower(args[3])
 
-	str := `{"name": "` + args[0] + `", "category": "` + category + `", "size": ` + strconv.Itoa(size) + `, "location": "` + location + `,"binder":"`+binder+`"}`
+	str := `{"name": "` + args[0] + `", "color": "` + color + `", "size": ` + strconv.Itoa(size) + `, "user": "` + user + `"}`
 	err = stub.PutState(args[0], []byte(str))								//store marble with id as key
 	if err != nil {
 		return nil, err
@@ -289,7 +283,7 @@ func (t *SimpleChaincode) set_user(stub *shim.ChaincodeStub, args []string) ([]b
 	}
 	res := Marble{}
 	json.Unmarshal(marbleAsBytes, &res)										//un stringify it aka JSON.parse()
-	res.Location = args[1]														//change the user
+	res.User = args[1]														//change the user
 	
 	jsonAsBytes, _ := json.Marshal(res)
 	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
