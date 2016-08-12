@@ -40,7 +40,7 @@ type Marble struct{
 	Name string `json:"name"`					//the fieldtags are needed to keep case from bouncing around
 	Category string `json:"category"`
 	Size int `json:"size"`
-	Loaction string `json:"location"`
+	Location string `json:"location"`
 	Binder string `json:"binder"`
 
 }
@@ -289,7 +289,7 @@ func (t *SimpleChaincode) set_user(stub *shim.ChaincodeStub, args []string) ([]b
 	}
 	res := Marble{}
 	json.Unmarshal(marbleAsBytes, &res)										//un stringify it aka JSON.parse()
-	res.User = args[1]														//change the user
+	res.Location = args[1]														//change the user
 	
 	jsonAsBytes, _ := json.Marshal(res)
 	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
